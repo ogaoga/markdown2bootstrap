@@ -8,6 +8,7 @@ define('DEBUG_MDOE', true);
 define('DOCUMENT_DIR', './docs');
 define('MARKDOWN_EXTENSION', 'md');
 
+// ===================================================
 // debug mode
 if ( DEBUG_MDOE ) {
   error_reporting(E_ALL);
@@ -15,6 +16,12 @@ if ( DEBUG_MDOE ) {
   ini_set('error_reporting', E_ALL);
 }
 
+// functions
+function h($str) {
+  return htmlspecialchars($str);
+}
+
+// ===================================================
 // parse params
 $params = $_GET;
 $page = 'index';
@@ -31,25 +38,35 @@ if ( $content === false ) {
 }
 
 // convert markdown to html
-$content = Markdown($content);
+$content = Markdown(h($content));
+
+// utils
+$title = $page;
+if ( preg_match('/<h1[^>]*>([^<]+)<\/h1>/i', $content, $matches) > 0 ) {
+  $title = $matches[1];
+}
 
 // output
 
 
 ?>
 <html>
+<head>
+<title><?= h($title) ?></title>
+</head>
 <body>
-<h1>Test</h1>
 
 <div class="content">
 <?= $content ?>
 </div>
 
+<? if ( DEBUG_MDOE ) { ?>
+<hr />
 <pre>
 <? var_dump($params); ?>
 <? var_dump($path); ?>
 </pre>
+<? } ?>
 
-<hr />
 </body>
 </html>
